@@ -6,11 +6,17 @@ const getAllSeniors = async (req, res) => {
     const filter = {};
 
     if (req.query.company) {
-      filter.company = req.query.company;
+      filter.company = {
+        $regex: req.query.company,
+        $options: "i"
+     };
     }
 
     if (req.query.role) {
-      filter.role = req.query.role;
+      filter.role = {
+        $regex: req.query.role,
+        $options: "i"
+      };
     }
 
     if (req.query.availability) {
