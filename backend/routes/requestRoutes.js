@@ -9,10 +9,12 @@ const {
   getExpiredRequests,
   getRequestsByStatus,
   getRequestsByJunior,
+  getRequestStats,
   getRequestById,
   acceptRequest,
   rejectRequest,
   expireRequest,
+  getSeniorDashboard,
   getRequestsBySenior,
   getPendingRequestsBySenior,
   getPendingRequestsByJunior,
@@ -26,12 +28,17 @@ router.get(
   "/senior/:seniorId/pending",
   getPendingRequestsBySenior
 );
+router.get(
+  "/senior/:seniorId/dashboard",
+  getSeniorDashboard
+);
 router.get("/senior/:seniorId", getRequestsBySenior);
 router.get(
   "/junior/:juniorId/pending",
   getPendingRequestsByJunior
 );
 router.get("/junior/:juniorId", getRequestsByJunior);
+router.get("/stats", getRequestStats);
 router.get("/:id", getRequestById);
 router.post("/", createRequest);
 router.put("/:id/accept", acceptRequest);

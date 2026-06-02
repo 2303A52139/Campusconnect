@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const requestRoutes = require("./routes/requestRoutes");
+const startExpireRequestsJob =
+  require("./jobs/expireRequests");
 
 dotenv.config();
 const seniorRoutes = require("./routes/seniorRoutes");
@@ -17,6 +19,7 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB Connected");
+    startExpireRequestsJob();
   })
   .catch((err) => {
     console.log(err);

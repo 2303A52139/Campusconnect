@@ -234,6 +234,80 @@ const deleteRequest = async (req, res) => {
     });
   }
 };
+const getRequestStats = async (req, res) => {
+  try {
+    const totalRequests = await Request.countDocuments();
+
+    const pending = await Request.countDocuments({
+      status: "Pending"
+    });
+
+    const accepted = await Request.countDocuments({
+      status: "Accepted"
+    });
+
+    const rejected = await Request.countDocuments({
+      status: "Rejected"
+    });
+
+    const expired = await Request.countDocuments({
+      status: "Expired"
+    });
+
+    res.status(200).json({
+      totalRequests,
+      pending,
+      accepted,
+      rejected,
+      expired
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+const getSeniorDashboard = async (req, res) => {
+  try {
+    const seniorId = req.params.seniorId;
+
+    const totalRequests = await Request.countDocuments({
+      seniorId
+    });
+
+    const pending = await Request.countDocuments({
+      seniorId,
+      status: "Pending"
+    });
+
+    const accepted = await Request.countDocuments({
+      seniorId,
+      status: "Accepted"
+    });
+
+    const rejected = await Request.countDocuments({
+      seniorId,
+      status: "Rejected"
+    });
+
+    const expired = await Request.countDocuments({
+      seniorId,
+      status: "Expired"
+    });
+
+    res.status(200).json({
+      totalRequests,
+      pending,
+      accepted,
+      rejected,
+      expired
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
 module.exports = {
   createRequest,
   getRequests,
@@ -248,5 +322,7 @@ module.exports = {
   getRequestsByJunior,
   getPendingRequestsBySenior,
   getPendingRequestsByJunior,
-  deleteRequest
+  deleteRequest,
+  getRequestStats,
+  getSeniorDashboard
 };
