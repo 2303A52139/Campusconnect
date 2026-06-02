@@ -159,6 +159,81 @@ const expireRequest = async (req, res) => {
     });
   }
 };
+const getRequestsBySenior = async (req, res) => {
+  try {
+    const requests = await Request.find({
+      seniorId: req.params.seniorId
+    });
+
+    res.status(200).json(requests);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+const getRequestsByJunior = async (req, res) => {
+  try {
+    const requests = await Request.find({
+      juniorId: req.params.juniorId
+    });
+
+    res.status(200).json(requests);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+const getPendingRequestsBySenior = async (req, res) => {
+  try {
+    const requests = await Request.find({
+      seniorId: req.params.seniorId,
+      status: "Pending"
+    });
+
+    res.status(200).json(requests);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+const getPendingRequestsByJunior = async (req, res) => {
+  try {
+    const requests = await Request.find({
+      juniorId: req.params.juniorId,
+      status: "Pending"
+    });
+
+    res.status(200).json(requests);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+const deleteRequest = async (req, res) => {
+  try {
+    const request = await Request.findByIdAndDelete(
+      req.params.id
+    );
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Request not found"
+      });
+    }
+
+    res.status(200).json({
+      message: "Request deleted successfully"
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
 module.exports = {
   createRequest,
   getRequests,
@@ -168,5 +243,10 @@ module.exports = {
   getRequestById,
   acceptRequest,
   rejectRequest,
-  expireRequest
+  expireRequest,
+  getRequestsBySenior,
+  getRequestsByJunior,
+  getPendingRequestsBySenior,
+  getPendingRequestsByJunior,
+  deleteRequest
 };
