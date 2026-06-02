@@ -1,30 +1,37 @@
 require("dotenv").config();
-const connectDB = require("./config/db");
-const express = require("express");
 
-const chatRoutes = require("./routes/chatRoutes");
+const express = require("express");
+const mongoose = require("mongoose");
+const connectDB = require("./config/db");
 
 const app = express();
-const notificationRoutes = require("./routes/notificationRoutes");
-const savedSeniorRoutes = require("./routes/savedSeniorRoutes");
+
+console.log("MY ADMIN SERVER IS RUNNING");
+
+// Connect Database
+connectDB();
 
 // Middleware
 app.use(express.json());
 
-// Routes
-app.use("/api/chat", chatRoutes);
-app.use("/api/notifications", notificationRoutes);
-app.use("/api/saved-seniors", savedSeniorRoutes);
+// Admin Routes
+const adminRoutes = require("./routes/adminRoutes");
+app.use("/api/admin", adminRoutes);
 
+// Home Route
 app.get("/", (req, res) => {
   res.send("CampusConnect Backend Running");
 });
 
-const PORT = process.env.PORT || 5000;
-connectDB();
+// Temporary Database Test Route
+app.get("/test-db", (req, res) => {
+  res.json({
+    readyState: mongoose.connection.readyState,
+  });
+});
+
+const PORT = 5000;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-const adminRoutes = require("./routes/adminRoutes");
-app.use("/api/admin", adminRoutes);
