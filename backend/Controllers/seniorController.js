@@ -3,7 +3,30 @@ const SeniorProfile = require("../models/SeniorProfile");
 // GET /api/seniors
 const getAllSeniors = async (req, res) => {
   try {
-    const seniors = await SeniorProfile.find();
+    const filter = {};
+
+    if (req.query.company) {
+      filter.company = req.query.company;
+    }
+
+    if (req.query.role) {
+      filter.role = req.query.role;
+    }
+
+    if (req.query.availability) {
+      filter.availability = req.query.availability;
+    }
+    if (req.query.experience) {
+      filter.experience = Number(req.query.experience);
+    }
+    if (req.query.guidanceTag) {
+  filter.guidanceTags = req.query.guidanceTag;
+    }
+    if (req.query.verified) {
+  filter.verified = req.query.verified === "true";
+    }
+
+    const seniors = await SeniorProfile.find(filter);
 
     res.status(200).json(seniors);
   } catch (error) {
