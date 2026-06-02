@@ -3,10 +3,11 @@ const connectDB = require("./config/db");
 const express = require("express");
 
 const chatRoutes = require("./routes/chatRoutes");
-
 const app = express();
 const notificationRoutes = require("./routes/notificationRoutes");
 const savedSeniorRoutes = require("./routes/savedSeniorRoutes");
+
+const authRoutes = require("./routes/authRoutes");
 
 // Middleware
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/api/chat", chatRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/saved-seniors", savedSeniorRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("CampusConnect Backend Running");
