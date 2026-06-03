@@ -64,3 +64,60 @@ exports.deleteCompany = async (req, res) => {
     });
   }
 };
+exports.resolveReport = async (req, res) => {
+  try {
+    const report = await Report.findByIdAndUpdate(
+      req.params.id,
+      {
+        status: "Resolved",
+      },
+      { new: true }
+    );
+
+    if (!report) {
+      return res.status(404).json({
+        message: "Report not found",
+      });
+    }
+
+    res.status(200).json(report);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+exports.getStats = async (req, res) => {
+  try {
+    res.status(200).json({
+      totalUsers: 0,
+      totalSeniors: 0,
+      totalRequests: 0,
+      acceptedRequests: 0,
+      expiredRequests: 0,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+exports.deleteReport = async (req, res) => {
+  try {
+    const report = await Report.findByIdAndDelete(req.params.id);
+
+    if (!report) {
+      return res.status(404).json({
+        message: "Report not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Report deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
