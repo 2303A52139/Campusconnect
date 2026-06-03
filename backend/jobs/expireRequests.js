@@ -4,14 +4,6 @@ const Request = require("../models/Request");
 const startExpireRequestsJob = () => {
   cron.schedule("* * * * *", async () => {
     try {
-        const requests = await Request.find({
-            status: "Pending"
-});
-
-    console.log("Pending Requests:", requests);
-     
-      
-
       const result = await Request.updateMany(
         {
           status: "Pending",
