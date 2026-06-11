@@ -1,0 +1,70 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f1220;
+  color: white;
+}
+
+.app-container {
+  text-align: center;
+}
+
+.navbar {
+  padding: 20px;
+  border-bottom: 1px solid #444;
+}
+
+.navbar h1 {
+  margin-bottom: 15px;
+}
+
+.nav-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.nav-links a:hover {
+  color: #4da6ff;
+}
+
+.page-container {
+  max-width: 800px;
+  margin: 30px auto;
+}
+
+.card {
+  background: #1a1f35;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+input {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  width: 250px;
+}
+
+button {
+  padding: 10px 15px;
+  margin-left: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #4da6ff;
+  color: white;
+}
+
+button:hover {
+  background: #2f8cff;
+}

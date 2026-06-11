@@ -1,12 +1,33 @@
 require("dotenv").config();
 const connectDB = require("./config/db");
 const express = require("express");
+const cors = require("cors");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const chatRoutes = require("./routes/chatRoutes");
-
-const app = express();
 const notificationRoutes = require("./routes/notificationRoutes");
 const savedSeniorRoutes = require("./routes/savedSeniorRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+
+const app = express();
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+    ],
+    credentials: true,
+  })
+);
+const server = http.createServer(app);
+
+// Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
 // Middleware
 app.use(express.json());
@@ -15,16 +36,39 @@ app.use(express.json());
 app.use("/api/chat", chatRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/saved-seniors", savedSeniorRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.send("CampusConnect Backend Running");
 });
 
-const PORT = process.env.PORT || 5000;
-connectDB();
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Socket Rooms
+io.on("connection", (socket) => {
+  console.log("User Connected:", socket.id);
+
+  socket.on("joinConversation", (conversationId) => {
+    socket.join(conversationId);
+
+    console.log(
+      `Socket ${socket.id} joined conversation ${conversationId}`
+    );
+  });
+
+  socket.on("sendMessage", (data) => {
+    const { conversationId } = data;
+
+    io.to(conversationId).emit("receiveMessage", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User Disconnected:", socket.id);
+  });
 });
 
-const adminRoutes = require("./routes/adminRoutes");
-app.use("/api/admin", adminRoutes);
+const PORT = process.env.PORT || 5000;
+
+connectDB();
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
