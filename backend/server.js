@@ -1,12 +1,33 @@
 require("dotenv").config();
 const connectDB = require("./config/db");
 const express = require("express");
+const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
 
 const chatRoutes = require("./routes/chatRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const savedSeniorRoutes = require("./routes/savedSeniorRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+
+const app = express();
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+    ],
+    credentials: true,
+  })
+);
+const server = http.createServer(app);
+
+// Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
 const app = express();
 const server = http.createServer(app);
@@ -24,19 +45,29 @@ app.use(express.json());
 app.use("/api/chat", chatRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/saved-seniors", savedSeniorRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.send("CampusConnect Backend Running");
 });
 
-// Socket.IO
+
+// Socket Rooms
 io.on("connection", (socket) => {
   console.log("User Connected:", socket.id);
 
-  socket.on("sendMessage", (data) => {
-    console.log("Message Received:", data);
+  socket.on("joinConversation", (conversationId) => {
+    socket.join(conversationId);
 
-    io.emit("receiveMessage", data);
+    console.log(
+      `Socket ${socket.id} joined conversation ${conversationId}`
+    );
+  });
+
+  socket.on("sendMessage", (data) => {
+    const { conversationId } = data;
+
+    io.to(conversationId).emit("receiveMessage", data);
   });
 
   socket.on("disconnect", () => {
