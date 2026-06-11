@@ -8,6 +8,7 @@ import SeniorList from "./pages/SeniorList";
 import SeniorProfile from "./pages/SeniorProfile";
 import RequestGuidance from "./pages/RequestGuidance";
 import MyRequests from "./pages/MyRequests";
+import RequestStats from "./pages/RequestStats";
 
 function App() {
   return (
@@ -29,6 +30,10 @@ function App() {
         <Route
           path="/my-requests"
           element={<MyRequests />}
+        />
+        <Route
+          path="/request-stats"
+          element={<RequestStats />}
         />
       </Routes>
     </BrowserRouter>

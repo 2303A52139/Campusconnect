@@ -8,6 +8,16 @@ function RequestGuidance() {
   const [message, setMessage] =
     useState("");
   const submitRequest = async () => {
+  if (!requestType) {
+    alert("Please select request type");
+    return;
+  }
+
+  if (!message.trim()) {
+    alert("Please enter message");
+    return;
+  }
+
   try {
     const response = await api.post(
       "/requests",
@@ -24,11 +34,10 @@ function RequestGuidance() {
       }
     );
 
-    console.log(response.data);
-
     alert(
       "Request Submitted Successfully"
     );
+
   } catch (error) {
     console.log(error);
   }

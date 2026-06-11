@@ -5,6 +5,10 @@ import api from "../services/api";
 function SeniorList() {
   const [seniors, setSeniors] = useState([]);
   const [company, setCompany] = useState("");
+  const [role, setRole] = useState("");
+  const [availability, setAvailability] = useState("");
+  const [verified, setVerified] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,17 +17,9 @@ function SeniorList() {
 
   const fetchSeniors = async () => {
     try {
-      let url = "/seniors";
-
-      if (company) {
-        url = `/seniors?company=${company}`;
-      }
-      console.log("URL:", url);
-
+      const url = `/seniors?company=${company}&role=${role}&availability=${availability}&verified=${verified}`;
 
       const response = await api.get(url);
-
-      console.log(response.data);
 
       setSeniors(response.data);
     } catch (error) {
@@ -33,13 +29,14 @@ function SeniorList() {
 
   return (
     <div>
-      <button
-  onClick={() =>
-    navigate("/my-requests")
-  }
->
-  My Requests
-</button>
+      <button onClick={() => navigate("/my-requests")}>
+        My Requests
+      </button>
+
+      <button onClick={() => navigate("/request-stats")}>
+        Statistics
+      </button>
+
       <h1>CampusConnect</h1>
 
       <h2>Senior List</h2>
@@ -51,8 +48,78 @@ function SeniorList() {
         onChange={(e) => setCompany(e.target.value)}
       />
 
+      <br />
+      <br />
+
+      <input
+        type="text"
+        placeholder="Role"
+        value={role}
+        onChange={(e) => setRole(e.target.value)}
+      />
+
+      <br />
+      <br />
+
+      <select
+        value={availability}
+        onChange={(e) =>
+          setAvailability(e.target.value)
+        }
+      >
+        <option value="">
+          All Availability
+        </option>
+
+        <option value="Available">
+          Available
+        </option>
+
+        <option value="Limited Availability">
+          Limited Availability
+        </option>
+      </select>
+
+      <br />
+      <br />
+
+      <select
+        value={verified}
+        onChange={(e) =>
+          setVerified(e.target.value)
+        }
+      >
+        <option value="">
+          All
+        </option>
+
+        <option value="true">
+          Verified
+        </option>
+
+        <option value="false">
+          Not Verified
+        </option>
+      </select>
+
+      <br />
+      <br />
+
       <button onClick={fetchSeniors}>
         Search
+      </button>
+
+      <button
+        onClick={() => {
+          setCompany("");
+          setRole("");
+          setAvailability("");
+          setVerified("");
+
+          window.location.reload();
+        }}
+      >
+        Clear
       </button>
 
       {seniors.map((senior) => (
@@ -80,7 +147,21 @@ function SeniorList() {
             {senior.experience} Years
           </p>
 
-          <button onClick={() => navigate(`/seniors/${senior._id}`)}>
+          <p>
+            <strong>Availability:</strong>{" "}
+            {senior.availability}
+          </p>
+
+          <p>
+            <strong>Verified:</strong>{" "}
+            {senior.verified ? "Yes" : "No"}
+          </p>
+
+          <button
+            onClick={() =>
+              navigate(`/seniors/${senior._id}`)
+            }
+          >
             View Profile
           </button>
         </div>
