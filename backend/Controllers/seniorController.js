@@ -81,17 +81,7 @@ const getRecommendedSeniors = async (req, res) => {
 };
 const createSenior = async (req, res) => {
   try {
-    const senior = await SeniorProfile.create({
-      userId: "685000000000000000000001",
-      company: "Google",
-      role: "Software Engineer",
-      experience: 2,
-      city: "Hyderabad",
-      workMode: "Hybrid",
-      guidanceTags: ["Interview Preparation"],
-      availability: "Available",
-      verified: true
-    });
+    const senior = await SeniorProfile.create(req.body);
 
     res.status(201).json(senior);
   } catch (error) {

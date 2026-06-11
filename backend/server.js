@@ -1,3 +1,4 @@
+const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -10,6 +11,7 @@ const seniorRoutes = require("./routes/seniorRoutes");
 const app = express();
 
 
+app.use(cors());
 app.use(express.json());
 app.use("/api/seniors", seniorRoutes);
 app.use("/api/requests", requestRoutes);
