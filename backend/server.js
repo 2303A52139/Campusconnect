@@ -1,9 +1,11 @@
 require("dotenv").config();
 const connectDB = require("./config/db");
 const express = require("express");
+const cors = require("cors");
 
 const chatRoutes = require("./routes/chatRoutes");
 const app = express();
+app.use(cors());
 const notificationRoutes = require("./routes/notificationRoutes");
 const savedSeniorRoutes = require("./routes/savedSeniorRoutes");
 
