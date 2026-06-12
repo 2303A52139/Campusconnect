@@ -17,6 +17,12 @@ const {
   getResolvedReports,
   getStats,
   deleteReport,
+  getUsers,
+  getUnverifiedSeniors,
+  getVerifiedSeniors,
+  verifySenior,
+  unverifySenior,
+  deleteUser,
 } = require("../controllers/adminController");
 
 router.get("/dashboard", getDashboard);
@@ -42,4 +48,14 @@ router.get("/stats", getStats);
 
 router.delete("/report/:id", deleteReport);
 
+router.get("/users", getUsers);
+
+router.get("/unverified-seniors", getUnverifiedSeniors);
+
+router.put("/verify-senior/:id", verifySenior);
+router.get("/verified-seniors", getVerifiedSeniors);
+
+router.put("/unverify-senior/:id", unverifySenior);
+
+router.delete("/user/:id", deleteUser);
 module.exports = router;

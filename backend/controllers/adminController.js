@@ -1,5 +1,8 @@
 const Company = require("../models/company");
 const Report = require("../models/report");
+const User = require("../models/user");
+const SeniorProfile = require("../models/SeniorProfile");
+const Request = require("../models/Request");
 
 exports.getDashboard = async (req, res) => {
   try {
@@ -101,8 +104,10 @@ exports.resolveReport = async (req, res) => {
 };
 exports.getStats = async (req, res) => {
   try {
+    // Companies
     const totalCompanies = await Company.countDocuments();
 
+    // Reports
     const totalReports = await Report.countDocuments();
 
     const pendingReports = await Report.countDocuments({
@@ -117,15 +122,69 @@ exports.getStats = async (req, res) => {
       status: "Resolved",
     });
 
+    // Users
+    const totalUsers = await User.countDocuments();
+
+    const totalSeniors = await User.countDocuments({
+      role: "senior",
+    });
+
+    // Senior Verification
+    const verifiedSeniors = await SeniorProfile.countDocuments({
+      verified: true,
+    });
+
+    const unverifiedSeniors = await SeniorProfile.countDocuments({
+      verified: false,
+    });
+
+    // Requests
+    const totalRequests = await Request.countDocuments();
+
+    const acceptedRequests = await Request.countDocuments({
+      status: "Accepted",
+    });
+
+    const rejectedRequests = await Request.countDocuments({
+      status: "Rejected",
+    });
+
+    const expiredRequests = await Request.countDocuments({
+      status: "Expired",
+    });
+
+    const pendingRequests = await Request.countDocuments({
+      status: "Pending",
+    });
+
     res.status(200).json({
       companies: {
         total: totalCompanies,
       },
+
       reports: {
         total: totalReports,
         pending: pendingReports,
         reviewed: reviewedReports,
         resolved: resolvedReports,
+      },
+
+      users: {
+        total: totalUsers,
+        seniors: totalSeniors,
+      },
+
+      seniorVerification: {
+        verified: verifiedSeniors,
+        unverified: unverifiedSeniors,
+      },
+
+      requests: {
+        total: totalRequests,
+        accepted: acceptedRequests,
+        rejected: rejectedRequests,
+        expired: expiredRequests,
+        pending: pendingRequests,
       },
     });
   } catch (error) {
@@ -260,6 +319,110 @@ exports.getResolvedReports = async (req, res) => {
     });
 
     res.status(200).json(reports);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+exports.getVerifiedSeniors = async (req, res) => {
+  try {
+    const seniors = await SeniorProfile.find({
+      verified: true,
+    });
+
+    res.status(200).json(seniors);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+exports.getUnverifiedSeniors = async (req, res) => {
+  try {
+    const seniors = await SeniorProfile.find({
+      verified: false,
+    });
+
+    res.status(200).json(seniors);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+exports.verifySenior = async (req, res) => {
+  try {
+    const senior = await SeniorProfile.findByIdAndUpdate(
+      req.params.id,
+      {
+        verified: true,
+      },
+      { new: true }
+    );
+
+    if (!senior) {
+      return res.status(404).json({
+        message: "Senior profile not found",
+      });
+    }
+
+    res.status(200).json(senior);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+exports.unverifySenior = async (req, res) => {
+  try {
+    const senior = await SeniorProfile.findByIdAndUpdate(
+      req.params.id,
+      {
+        verified: false,
+      },
+      { new: true }
+    );
+
+    if (!senior) {
+      return res.status(404).json({
+        message: "Senior profile not found",
+      });
+    }
+
+    res.status(200).json(senior);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(
+      req.params.id
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "User deleted successfully",
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,
