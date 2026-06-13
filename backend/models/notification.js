@@ -22,6 +22,7 @@ const notificationSchema = new mongoose.Schema(
       ],
       required: true,
     },
+    
     senderName: {
       type: String,
     },
