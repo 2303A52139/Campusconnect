@@ -22,7 +22,7 @@ const notificationSchema = new mongoose.Schema(
       ],
       required: true,
     },
-    
+
     senderName: {
       type: String,
     },
@@ -30,6 +30,7 @@ const notificationSchema = new mongoose.Schema(
     message: {
       type: String,
     },
+
     isRead: {
       type: Boolean,
       default: false,
@@ -40,4 +41,7 @@ const notificationSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Notification", notificationSchema);
+module.exports = mongoose.model(
+  "Notification",
+  notificationSchema
+);

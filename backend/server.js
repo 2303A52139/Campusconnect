@@ -9,8 +9,10 @@ const chatRoutes = require("./routes/chatRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const savedSeniorRoutes = require("./routes/savedSeniorRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
+
 app.use(
   cors({
     origin: [
@@ -20,6 +22,7 @@ app.use(
     credentials: true,
   })
 );
+
 const server = http.createServer(app);
 
 // Socket.IO
@@ -37,11 +40,11 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/saved-seniors", savedSeniorRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("CampusConnect Backend Running");
 });
-
 
 // Socket Rooms
 io.on("connection", (socket) => {

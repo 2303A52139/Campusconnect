@@ -1,81 +1,3 @@
-// // import NotificationsPage from "./pages/NotificationsPage";
-
-// // function App() {
-// //   return <NotificationsPage />;
-// // }
-
-// // export default App;
-
-// import SavedSeniorPage from "./pages/SavedSeniorPage";
-
-// function App() {
-//   return <SavedSeniorPage />;
-// }
-// export default App;
-
-
-// import {
-//   BrowserRouter,
-//   Routes,
-//   Route,
-//   Link,
-// } from "react-router-dom";
-
-// import ChatPage from "./pages/ChatPage";
-// import NotificationsPage from "./pages/NotificationsPage";
-// import SavedSeniorPage from "./pages/SavedSeniorPage";
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <div>
-//         <h1>CampusConnect</h1>
-
-//         <nav>
-//           <Link to="/">
-//             Chat
-//           </Link>
-//           {" | "}
-
-//           <Link to="/notifications">
-//             Notifications
-//           </Link>
-//           {" | "}
-
-//           <Link to="/saved-seniors">
-//             Saved Seniors
-//           </Link>
-//         </nav>
-
-//         <hr />
-
-//         <Routes>
-//           <Route
-//             path="/"
-//             element={<ChatPage />}
-//           />
-
-//           <Route
-//             path="/notifications"
-//             element={
-//               <NotificationsPage />
-//             }
-//           />
-
-//           <Route
-//             path="/saved-seniors"
-//             element={
-//               <SavedSeniorPage />
-//             }
-//           />
-//         </Routes>
-//       </div>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;
-
 import {
   BrowserRouter,
   Routes,
@@ -87,6 +9,11 @@ import ChatPage from "./pages/ChatPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import SavedSeniorPage from "./pages/SavedSeniorPage";
 
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+
 import "./App.css";
 
 function App() {
@@ -97,7 +24,9 @@ function App() {
           <h1>CampusConnect</h1>
 
           <div className="nav-links">
-            <Link to="/">Chat</Link>
+            <Link to="/">Home</Link>
+
+            <Link to="/chat">Chat</Link>
 
             <Link to="/notifications">
               Notifications
@@ -106,12 +35,24 @@ function App() {
             <Link to="/saved-seniors">
               Saved Seniors
             </Link>
+
+            <Link to="/login">Login</Link>
+
+            <Link to="/register">
+              Register
+            </Link>
+
+            <Link to="/profile">
+              Profile
+            </Link>
           </div>
         </div>
 
         <Routes>
+          <Route path="/" element={<Home />} />
+
           <Route
-            path="/"
+            path="/chat"
             element={<ChatPage />}
           />
 
@@ -123,6 +64,21 @@ function App() {
           <Route
             path="/saved-seniors"
             element={<SavedSeniorPage />}
+          />
+
+          <Route
+            path="/login"
+            element={<Login />}
+          />
+
+          <Route
+            path="/register"
+            element={<Register />}
+          />
+
+          <Route
+            path="/profile"
+            element={<Profile />}
           />
         </Routes>
       </div>

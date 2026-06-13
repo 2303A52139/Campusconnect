@@ -27,6 +27,7 @@ const markAsRead = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 // Create Notification
 const createNotification = async (
   req,
@@ -43,6 +44,7 @@ const createNotification = async (
     });
   }
 };
+
 module.exports = {
   createNotification,
   getNotifications,
