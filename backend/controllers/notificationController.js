@@ -28,7 +28,7 @@ const markAsRead = async (req, res) => {
   }
 };
 
-// Create Notification
+//Create Notification
 const createNotification = async (
   req,
   res
@@ -44,7 +44,6 @@ const createNotification = async (
     });
   }
 };
-
 module.exports = {
   createNotification,
   getNotifications,

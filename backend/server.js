@@ -1,5 +1,5 @@
-
 require("dotenv").config();
+
 const connectDB = require("./config/db");
 const express = require("express");
 const cors = require("cors");
@@ -13,8 +13,10 @@ const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
 const requestRoutes = require("./routes/requestRoutes");
 const seniorRoutes = require("./routes/seniorRoutes");
+
 const startExpireRequestsJob =
   require("./jobs/expireRequests");
+
 const app = express();
 
 app.use(
@@ -36,25 +38,34 @@ const io = new Server(server, {
   },
 });
 
+// Connect Database
+connectDB();
+
 // Middleware
 app.use(express.json());
 
-// Existing Routes
+// Routes
 app.use("/api/chat", chatRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/saved-seniors", savedSeniorRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
-
-// Request Module Routes
 app.use("/api/seniors", seniorRoutes);
 app.use("/api/requests", requestRoutes);
 
 // Start request expiration job
 startExpireRequestsJob();
 
+// Home Route
 app.get("/", (req, res) => {
   res.send("CampusConnect Backend Running");
+});
+
+// Optional DB test route from admin branch
+app.get("/test-db", (req, res) => {
+  res.json({
+    status: "connected",
+  });
 });
 
 // Socket Rooms
@@ -71,7 +82,6 @@ io.on("connection", (socket) => {
 
   socket.on("sendMessage", (data) => {
     const { conversationId } = data;
-
     io.to(conversationId).emit("receiveMessage", data);
   });
 
@@ -82,8 +92,6 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT || 5000;
 
-connectDB();
-startExpireRequestsJob();
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
