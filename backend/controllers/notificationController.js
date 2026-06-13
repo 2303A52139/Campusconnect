@@ -28,7 +28,23 @@ const markAsRead = async (req, res) => {
   }
 };
 
+const createNotification = async (
+  req,
+  res
+) => {
+  try {
+    const notification =
+      await Notification.create(req.body);
+
+    res.status(201).json(notification);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 module.exports = {
+  createNotification,
   getNotifications,
   markAsRead,
 };

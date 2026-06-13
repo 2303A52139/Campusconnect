@@ -3,8 +3,7 @@ const mongoose = require("mongoose");
 const notificationSchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
       required: true,
     },
 
@@ -22,6 +21,13 @@ const notificationSchema = new mongoose.Schema(
         "REQUEST_EXPIRING",
       ],
       required: true,
+    },
+    
+    senderName: {
+      type: String,
+    },
+    message: {
+      type: String,
     },
 
     isRead: {
