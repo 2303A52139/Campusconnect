@@ -29,15 +29,6 @@ const io = new Server(server, {
   },
 });
 
-const app = express();
-const server = http.createServer(app);
-
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-  },
-});
-
 // Middleware
 app.use(express.json());
 
