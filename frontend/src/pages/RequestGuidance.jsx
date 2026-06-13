@@ -8,40 +8,40 @@ function RequestGuidance() {
   const [message, setMessage] =
     useState("");
   const submitRequest = async () => {
-  if (!requestType) {
-    alert("Please select request type");
-    return;
-  }
+    if (!requestType) {
+      alert("Please select request type");
+      return;
+    }
 
-  if (!message.trim()) {
-    alert("Please enter message");
-    return;
-  }
+    if (!message.trim()) {
+      alert("Please enter message");
+      return;
+    }
 
-  try {
-    const response = await api.post(
-      "/requests",
-      {
-        juniorId:
-          "685000000000000000000002",
+    try {
+      const response = await api.post(
+        "/requests",
+        {
+          juniorId:
+            "685000000000000000000002",
 
-        seniorId:
-          "685000000000000000000001",
+          seniorId:
+            "685000000000000000000001",
 
-        requestType,
+          requestType,
 
-        message
-      }
-    );
+          message
+        }
+      );
 
-    alert(
-      "Request Submitted Successfully"
-    );
+      alert(
+        "Request Submitted Successfully"
+      );
 
-  } catch (error) {
-    console.log(error);
-  }
-};
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div>

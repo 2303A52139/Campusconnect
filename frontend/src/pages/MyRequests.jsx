@@ -31,19 +31,19 @@ function MyRequests() {
           <p>{request.message}</p>
 
           <p
-  style={{
-    color:
-      request.status === "Accepted"
-        ? "green"
-        : request.status === "Rejected"
-        ? "red"
-        : request.status === "Pending"
-        ? "orange"
-        : "gray"
-  }}
->
-  Status: {request.status}
-</p>
+            style={{
+              color:
+                request.status === "Accepted"
+                  ? "green"
+                  : request.status === "Rejected"
+                    ? "red"
+                    : request.status === "Pending"
+                      ? "orange"
+                      : "gray"
+            }}
+          >
+            Status: {request.status}
+          </p>
           <hr />
         </div>
       ))}

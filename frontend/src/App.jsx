@@ -14,6 +14,12 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 
+import SeniorList from "./pages/SeniorList";
+import SeniorProfile from "./pages/SeniorProfile";
+import RequestGuidance from "./pages/RequestGuidance";
+import MyRequests from "./pages/MyRequests";
+import RequestStats from "./pages/RequestStats";
+
 import "./App.css";
 
 function App() {
@@ -79,6 +85,31 @@ function App() {
           <Route
             path="/profile"
             element={<Profile />}
+          />
+
+          <Route
+            path="/seniors"
+            element={<SeniorList />}
+          />
+
+          <Route
+            path="/seniors/:id"
+            element={<SeniorProfile />}
+          />
+
+          <Route
+            path="/request/:id"
+            element={<RequestGuidance />}
+          />
+
+          <Route
+            path="/my-requests"
+            element={<MyRequests />}
+          />
+
+          <Route
+            path="/request-stats"
+            element={<RequestStats />}
           />
         </Routes>
       </div>

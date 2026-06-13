@@ -62,13 +62,13 @@ function SeniorProfile() {
         {senior.verified ? "Yes" : "No"}
       </p>
       <button
-  onClick={() =>
-    navigate(`/request/${id}`)
-  }
->
-  Request Guidance
-</button>
-      
+        onClick={() =>
+          navigate(`/request/${id}`)
+        }
+      >
+        Request Guidance
+      </button>
+
     </div>
   );
 }
