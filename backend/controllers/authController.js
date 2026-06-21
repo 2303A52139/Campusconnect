@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const SeniorProfile = require("../models/SeniorProfile");
 
 // Register
 const register = async (req, res) => {
@@ -107,22 +108,42 @@ catch(error){
 };
 
 // Update Profile
-const updateProfile = async(req,res)=>{
-try{
+const updateProfile = async (req, res) => {
+try {
 
-    const user =
-    await User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user.id,
         req.body,
-        {new:true}
+        { new: true }
     ).select("-password");
+
+    // If Senior, create/update SeniorProfile
+    if (user.role === "senior") {
+
+        await SeniorProfile.findOneAndUpdate(
+            { userId: user._id },
+            {
+                userId: user._id,
+                company: user.company || "",
+                role: "Senior",
+                experience: user.experience || 0,
+                city: user.city || "",
+                availability:
+                    user.availability || "Available"
+            },
+            {
+                upsert: true,
+                new: true
+            }
+        );
+    }
 
     res.status(200).json(user);
 
 }
-catch(error){
+catch (error) {
     res.status(500).json({
-        error:error.message
+        error: error.message
     });
 }
 };

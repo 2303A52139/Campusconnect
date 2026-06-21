@@ -30,6 +30,22 @@ const userSchema = new mongoose.Schema(
 
     company: {
         type: String
+    },
+    experience:{
+        type: Number,
+        default: 0
+    },
+    city:{
+        type: String
+    },
+    availability: {
+        type: String,
+        enum: [
+            "Available",
+            "Limited Availability",
+            "Not Accepting Requests"
+        ],
+        default: "Available"
     }
 },
 {
