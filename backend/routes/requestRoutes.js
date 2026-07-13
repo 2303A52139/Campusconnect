@@ -1,5 +1,4 @@
 const express = require("express");
-
 const router = express.Router();
 
 const {
@@ -9,40 +8,32 @@ const {
   getExpiredRequests,
   getRequestsByStatus,
   getRequestsByJunior,
-  getRequestStats,
   getRequestById,
   acceptRequest,
   rejectRequest,
   expireRequest,
-  getSeniorDashboard,
   getRequestsBySenior,
   getPendingRequestsBySenior,
   getPendingRequestsByJunior,
-  deleteRequest
-} = require("../Controllers/requestController");
+  deleteRequest,
+} = require("../controllers/requestController");
+
 router.get("/", getRequests);
 router.get("/pending", getPendingRequests);
 router.get("/expired", getExpiredRequests);
 router.get("/status/:status", getRequestsByStatus);
-router.get(
-  "/senior/:seniorId/pending",
-  getPendingRequestsBySenior
-);
-router.get(
-  "/senior/:seniorId/dashboard",
-  getSeniorDashboard
-);
+
+router.get("/senior/:seniorId/pending", getPendingRequestsBySenior);
 router.get("/senior/:seniorId", getRequestsBySenior);
-router.get(
-  "/junior/:juniorId/pending",
-  getPendingRequestsByJunior
-);
+
+router.get("/junior/:juniorId/pending", getPendingRequestsByJunior);
 router.get("/junior/:juniorId", getRequestsByJunior);
-router.get("/stats", getRequestStats);
+
 router.get("/:id", getRequestById);
 router.post("/", createRequest);
 router.put("/:id/accept", acceptRequest);
 router.put("/:id/reject", rejectRequest);
 router.put("/:id/expire", expireRequest);
 router.delete("/:id", deleteRequest);
+
 module.exports = router;

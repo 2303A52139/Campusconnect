@@ -2,6 +2,9 @@ const express = require("express");
 
 const router = express.Router();
 
+const protect = require("../middleware/authMiddleware");
+const authorize = require("../middleware/roleMiddleware");
+
 const {
   getDashboard,
   getReports,
@@ -24,6 +27,10 @@ const {
   unverifySenior,
   deleteUser,
 } = require("../controllers/adminController");
+
+// All admin routes require authentication and admin role
+router.use(protect);
+router.use(authorize("admin"));
 
 router.get("/dashboard", getDashboard);
 
@@ -58,4 +65,5 @@ router.get("/verified-seniors", getVerifiedSeniors);
 router.put("/unverify-senior/:id", unverifySenior);
 
 router.delete("/user/:id", deleteUser);
+
 module.exports = router;

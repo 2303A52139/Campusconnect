@@ -6,39 +6,51 @@ const getAllSeniors = async (req, res) => {
     const filter = {};
 
     if (req.query.company) {
-      filter.company = {
-        $regex: req.query.company,
-        $options: "i"
-     };
+      filter.company = { $regex: req.query.company, $options: "i" };
     }
 
     if (req.query.role) {
-      filter.role = {
-        $regex: req.query.role,
-        $options: "i"
-      };
+      filter.role = { $regex: req.query.role, $options: "i" };
     }
 
     if (req.query.availability) {
       filter.availability = req.query.availability;
     }
+
     if (req.query.experience) {
       filter.experience = Number(req.query.experience);
     }
+
     if (req.query.guidanceTag) {
-  filter.guidanceTags = req.query.guidanceTag;
+      filter.guidanceTags = req.query.guidanceTag;
     }
+
     if (req.query.verified) {
-  filter.verified = req.query.verified === "true";
+      filter.verified = req.query.verified === "true";
     }
 
-    const seniors = await SeniorProfile.find(filter);
+    const page = Math.max(parseInt(req.query.page || "1", 10), 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit || "12", 10), 1), 50);
+    const skip = (page - 1) * limit;
 
-    res.status(200).json(seniors);
-  } catch (error) {
-    res.status(500).json({
-      message: error.message
+    const seniors = await SeniorProfile.find(filter)
+      .sort({ verified: -1, createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await SeniorProfile.countDocuments(filter);
+
+    res.status(200).json({
+      data: seniors,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -48,48 +60,39 @@ const getSeniorById = async (req, res) => {
     const senior = await SeniorProfile.findById(req.params.id);
 
     if (!senior) {
-      return res.status(404).json({
-        message: "Senior not found"
-      });
+      return res.status(404).json({ message: "Senior not found" });
     }
 
     res.status(200).json(senior);
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json({ message: error.message });
   }
 };
+
 const getRecommendedSeniors = async (req, res) => {
   try {
-    const company = req.query.company;
+    const company = req.query.company || "";
 
     const seniors = await SeniorProfile.find({
-      company: {
-        $regex: company,
-        $options: "i"
-      },
-      verified: true
+      company: { $regex: company, $options: "i" },
+      verified: true,
     });
 
     res.status(200).json(seniors);
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json({ message: error.message });
   }
 };
+
 const createSenior = async (req, res) => {
   try {
     const senior = await SeniorProfile.create(req.body);
-
     res.status(201).json(senior);
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json({ message: error.message });
   }
 };
+
 const updateSenior = async (req, res) => {
   try {
     const senior = await SeniorProfile.findByIdAndUpdate(
@@ -99,44 +102,34 @@ const updateSenior = async (req, res) => {
     );
 
     if (!senior) {
-      return res.status(404).json({
-        message: "Senior not found"
-      });
+      return res.status(404).json({ message: "Senior not found" });
     }
 
     res.status(200).json(senior);
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json({ message: error.message });
   }
 };
+
 const deleteSenior = async (req, res) => {
   try {
-    const senior = await SeniorProfile.findByIdAndDelete(
-      req.params.id
-    );
+    const senior = await SeniorProfile.findByIdAndDelete(req.params.id);
 
     if (!senior) {
-      return res.status(404).json({
-        message: "Senior not found"
-      });
+      return res.status(404).json({ message: "Senior not found" });
     }
 
-    res.status(200).json({
-      message: "Senior deleted successfully"
-    });
+    res.status(200).json({ message: "Senior deleted successfully" });
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json({ message: error.message });
   }
 };
+
 module.exports = {
   getAllSeniors,
   getSeniorById,
   getRecommendedSeniors,
   createSenior,
   updateSenior,
-  deleteSenior
+  deleteSenior,
 };

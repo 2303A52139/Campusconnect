@@ -1,11 +1,33 @@
 const mongoose = require("mongoose");
 const Conversation = require("../models/conversation");
 const Message = require("../models/message");
+const Notification = require("../models/notification");
+const User = require("../models/user");
 
 // Create Conversation
 const createConversation = async (req, res) => {
   try {
     const { participants, requestId } = req.body;
+
+    if (!participants || !Array.isArray(participants) || participants.length < 2) {
+      return res.status(400).json({
+        message: "participants must be an array with at least 2 users",
+      });
+    }
+
+    for (const participant of participants) {
+      if (!mongoose.Types.ObjectId.isValid(participant)) {
+        return res.status(400).json({
+          message: "Invalid participant ID",
+        });
+      }
+    }
+
+    if (requestId && !mongoose.Types.ObjectId.isValid(requestId)) {
+      return res.status(400).json({
+        message: "Invalid request ID",
+      });
+    }
 
     const conversation = await Conversation.create({
       participants,
@@ -14,7 +36,9 @@ const createConversation = async (req, res) => {
 
     res.status(201).json(conversation);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
@@ -23,15 +47,71 @@ const sendMessage = async (req, res) => {
   try {
     const { conversationId, senderId, text } = req.body;
 
+    if (!conversationId || !senderId || !text) {
+      return res.status(400).json({
+        message: "conversationId, senderId, and text are required",
+      });
+    }
+
+    if (
+      !mongoose.Types.ObjectId.isValid(conversationId) ||
+      !mongoose.Types.ObjectId.isValid(senderId)
+    ) {
+      return res.status(400).json({
+        message: "Invalid conversationId or senderId",
+      });
+    }
+
+    const trimmedText = text.trim();
+    if (!trimmedText) {
+      return res.status(400).json({
+        message: "Message text cannot be empty",
+      });
+    }
+
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+      return res.status(404).json({
+        message: "Conversation not found",
+      });
+    }
+
+    const isParticipant = conversation.participants.some(
+      (id) => id.toString() === senderId
+    );
+
+    if (!isParticipant) {
+      return res.status(403).json({
+        message: "You are not a participant in this conversation",
+      });
+    }
+
     const message = await Message.create({
       conversationId,
       senderId,
-      text,
+      text: trimmedText,
     });
+
+    const sender = await User.findById(senderId);
+
+    for (const participantId of conversation.participants) {
+      if (participantId.toString() !== senderId) {
+        await Notification.create({
+          userId: participantId,
+          title: `New message from ${sender?.name || "Someone"}`,
+          type: "NEW_MESSAGE",
+          senderName: sender?.name || "Unknown",
+          message: trimmedText,
+          isRead: false,
+        });
+      }
+    }
 
     res.status(201).json(message);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 

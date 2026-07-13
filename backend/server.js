@@ -4,6 +4,9 @@ const connectDB = require("./config/db");
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
+const morgan = require("morgan");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const { Server } = require("socket.io");
 
 const chatRoutes = require("./routes/chatRoutes");
@@ -14,37 +17,51 @@ const authRoutes = require("./routes/authRoutes");
 const requestRoutes = require("./routes/requestRoutes");
 const seniorRoutes = require("./routes/seniorRoutes");
 
-const startExpireRequestsJob =
-  require("./jobs/expireRequests");
+const startExpireRequestsJob = require("./jobs/expireRequests");
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+];
+
+app.use(helmet());
+app.use(morgan("dev"));
+app.use(express.json({ limit: "1mb" }));
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-    ],
+    origin: allowedOrigins,
     credentials: true,
+  })
+);
+
+app.use(
+  "/api/auth",
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 50,
+    standardHeaders: true,
+    legacyHeaders: false,
   })
 );
 
 const server = http.createServer(app);
 
-// Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: allowedOrigins,
+    credentials: true,
   },
 });
 
-// Connect Database
 connectDB();
 
-// Middleware
-app.use(express.json());
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 
-// Routes
 app.use("/api/chat", chatRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/saved-seniors", savedSeniorRoutes);
@@ -53,45 +70,22 @@ app.use("/api/auth", authRoutes);
 app.use("/api/seniors", seniorRoutes);
 app.use("/api/requests", requestRoutes);
 
-// Start request expiration job
 startExpireRequestsJob();
 
-// Home Route
-app.get("/", (req, res) => {
-  res.send("CampusConnect Backend Running");
-});
+app.get("/", (req, res) => res.send("CampusConnect Backend Running"));
 
-// Optional DB test route from admin branch
-app.get("/test-db", (req, res) => {
-  res.json({
-    status: "connected",
-  });
-});
-
-// Socket Rooms
 io.on("connection", (socket) => {
-  console.log("User Connected:", socket.id);
-
   socket.on("joinConversation", (conversationId) => {
     socket.join(conversationId);
-
-    console.log(
-      `Socket ${socket.id} joined conversation ${conversationId}`
-    );
   });
 
   socket.on("sendMessage", (data) => {
-    const { conversationId } = data;
-    io.to(conversationId).emit("receiveMessage", data);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User Disconnected:", socket.id);
+    io.to(data.conversationId).emit("receiveMessage", data);
   });
 });
 
 const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const requestLogger = require("./middleware/requestLogger");
+app.use(requestLogger);

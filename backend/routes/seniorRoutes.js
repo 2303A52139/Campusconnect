@@ -1,7 +1,5 @@
 const express = require("express");
-
 const router = express.Router();
-
 
 const {
   getAllSeniors,
@@ -9,8 +7,8 @@ const {
   getRecommendedSeniors,
   createSenior,
   updateSenior,
-  deleteSenior
-} = require("../Controllers/seniorController");
+  deleteSenior,
+} = require("../controllers/seniorController");
 
 // GET /api/seniors
 router.get("/", getAllSeniors);
