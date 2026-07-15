@@ -3,8 +3,8 @@ const Conversation = require("../models/conversation");
 const Message = require("../models/message");
 const Notification = require("../models/notification");
 const User = require("../models/user");
+const Request = require("../models/Request");
 
-// Create Conversation
 const createConversation = async (req, res) => {
   try {
     const { participants, requestId } = req.body;
@@ -42,7 +42,6 @@ const createConversation = async (req, res) => {
   }
 };
 
-// Send Message
 const sendMessage = async (req, res) => {
   try {
     const { conversationId, senderId, text } = req.body;
@@ -86,6 +85,16 @@ const sendMessage = async (req, res) => {
       });
     }
 
+    if (conversation.requestId) {
+      const request = await Request.findById(conversation.requestId);
+
+      if (!request || request.status !== "Accepted") {
+        return res.status(403).json({
+          message: "Chat unavailable until the request is accepted",
+        });
+      }
+    }
+
     const message = await Message.create({
       conversationId,
       senderId,
@@ -115,7 +124,6 @@ const sendMessage = async (req, res) => {
   }
 };
 
-// Get Messages
 const getMessages = async (req, res) => {
   try {
     const { conversationId } = req.params;
@@ -138,8 +146,37 @@ const getMessages = async (req, res) => {
   }
 };
 
+const getConversationByRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(requestId)) {
+      return res.status(400).json({
+        message: "Invalid request ID",
+      });
+    }
+
+    const conversation = await Conversation.findOne({
+      requestId,
+    });
+
+    if (!conversation) {
+      return res.status(404).json({
+        message: "Conversation not found",
+      });
+    }
+
+    res.status(200).json(conversation);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createConversation,
   sendMessage,
   getMessages,
+  getConversationByRequest,
 };

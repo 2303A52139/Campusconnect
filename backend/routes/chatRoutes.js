@@ -5,15 +5,12 @@ const {
   createConversation,
   sendMessage,
   getMessages,
+  getConversationByRequest,
 } = require("../controllers/chatController");
 
-// Create Conversation
 router.post("/conversation", createConversation);
-
-// Send Message
 router.post("/message", sendMessage);
-
-// Get Messages
 router.get("/messages/:conversationId", getMessages);
+router.get("/conversation/:requestId", getConversationByRequest);
 
 module.exports = router;

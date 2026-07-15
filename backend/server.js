@@ -80,7 +80,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendMessage", (data) => {
-    io.to(data.conversationId).emit("receiveMessage", data);
+    socket.to(data.conversationId).emit("receiveMessage", data);
   });
 });
 

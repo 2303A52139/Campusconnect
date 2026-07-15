@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Request = require("../models/Request");
 const Notification = require("../models/notification");
 const User = require("../models/user");
+const Conversation = require("../models/conversation");
 
 const createNotificationHelper = async (userId, title, type, senderName, message) => {
   try {
@@ -122,7 +123,9 @@ const getRequestsByStatus = async (req, res) => {
 
 const getRequestById = async (req, res) => {
   try {
-    const request = await Request.findById(req.params.id);
+    const request = await Request.findById(req.params.id)
+      .populate("juniorId", "name email")
+      .populate("seniorId", "name email");
 
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
@@ -136,17 +139,44 @@ const getRequestById = async (req, res) => {
 
 const acceptRequest = async (req, res) => {
   try {
-    const request = await Request.findByIdAndUpdate(
-      req.params.id,
-      { status: "Accepted", respondedAt: new Date() },
-      { new: true }
-    );
+    const request = await Request.findById(req.params.id);
 
     if (!request) {
-      return res.status(404).json({ message: "Request not found" });
+      return res.status(404).json({
+        message: "Request not found",
+      });
     }
 
+    // Prevent accepting twice
+    if (request.status === "Accepted") {
+      return res.status(400).json({
+        message: "Request already accepted",
+      });
+    }
+
+    // Find existing conversation for this request
+    let conversation = await Conversation.findOne({
+      requestId: request._id,
+    });
+
+    // Create conversation only if it doesn't exist
+    if (!conversation) {
+      conversation = await Conversation.create({
+        participants: [request.juniorId, request.seniorId],
+        requestId: request._id,
+      });
+    }
+
+    // Update request
+    request.status = "Accepted";
+    request.respondedAt = new Date();
+    request.conversationId = conversation._id;
+
+    await request.save();
+
+    // Notification
     const senior = await User.findById(request.seniorId);
+
     if (senior) {
       await createNotificationHelper(
         request.juniorId,
@@ -157,9 +187,16 @@ const acceptRequest = async (req, res) => {
       );
     }
 
-    res.status(200).json(request);
+    return res.status(200).json({
+      message: "Request accepted successfully",
+      request,
+      conversationId: conversation._id,
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
@@ -220,7 +257,10 @@ const expireRequest = async (req, res) => {
 
 const getRequestsBySenior = async (req, res) => {
   try {
-    const requests = await Request.find({ seniorId: req.params.seniorId });
+    const requests = await Request.find({ seniorId: req.params.seniorId })
+      .populate("juniorId", "name email")
+      .populate("seniorId", "name email");
+
     res.status(200).json(requests);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -229,7 +269,10 @@ const getRequestsBySenior = async (req, res) => {
 
 const getRequestsByJunior = async (req, res) => {
   try {
-    const requests = await Request.find({ juniorId: req.params.juniorId });
+    const requests = await Request.find({ juniorId: req.params.juniorId })
+      .populate("juniorId", "name email")
+      .populate("seniorId", "name email");
+
     res.status(200).json(requests);
   } catch (error) {
     res.status(500).json({ message: error.message });
