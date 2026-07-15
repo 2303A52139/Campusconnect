@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useUser } from "../context/UserContext";
 import Loader from "../components/Common/Loader";
@@ -8,6 +9,7 @@ export default function MyRequests() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { user, token } = useUser();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) fetchRequests();
@@ -28,6 +30,25 @@ export default function MyRequests() {
     }
   };
 
+  const openChat = async (requestId) => {
+    try {
+      const response = await api.get(
+        `/chat/conversation/${requestId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      navigate(`/chat/${response.data._id}`);
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+        "Unable to open conversation."
+      );
+    }
+  };
   if (loading) return <Loader message="Loading your requests..." />;
 
   return (
@@ -52,6 +73,14 @@ export default function MyRequests() {
                 </span>
               </div>
               <p className="mt-3 text-sm text-slate-300">{request.message}</p>
+              {request.status === "Accepted" && (
+                <button
+                  onClick={() => openChat(request._id)}
+                  className="mt-4 rounded-xl bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700"
+                >
+                  Open Chat
+                </button>
+              )}
             </div>
           ))}
         </div>

@@ -13,6 +13,7 @@ import SeniorProfile from "./pages/SeniorProfile";
 import RequestGuidance from "./pages/RequestGuidance";
 import MyRequests from "./pages/MyRequests";
 import RequestStats from "./pages/RequestStats";
+import SeniorRequests from "./pages/SeniorRequests";
 
 import AdminRoutes from "./routes/AdminRoutes";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -34,17 +35,19 @@ function AppShell({ children }) {
             <Link className="rounded-full px-3 py-2 hover:bg-white/10" to="/seniors">
               Seniors
             </Link>
-            <Link className="rounded-full px-3 py-2 hover:bg-white/10" to="/chat">
-              Chat
+            <Link className="rounded-full px-3 py-2 hover:bg-white/10" to="/my-requests">
+              My Requests
             </Link>
+            {user?.role === "senior" && (
+              <Link className="rounded-full px-3 py-2 hover:bg-white/10" to="/senior-requests">
+                Incoming Requests
+              </Link>
+            )}
             <Link className="rounded-full px-3 py-2 hover:bg-white/10" to="/notifications">
               Notifications
             </Link>
             <Link className="rounded-full px-3 py-2 hover:bg-white/10" to="/saved-seniors">
               Saved
-            </Link>
-            <Link className="rounded-full px-3 py-2 hover:bg-white/10" to="/my-requests">
-              Requests
             </Link>
             <Link className="rounded-full px-3 py-2 hover:bg-white/10" to="/profile">
               Profile
@@ -99,13 +102,14 @@ function AppContent() {
         <Route path="/seniors/:id" element={<SeniorProfile />} />
 
         <Route
-          path="/chat"
+          path="/chat/:conversationId"
           element={
             <ProtectedRoute>
               <ChatPage />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/notifications"
           element={
@@ -114,6 +118,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/saved-seniors"
           element={
@@ -122,6 +127,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/profile"
           element={
@@ -130,6 +136,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/request/:id"
           element={
@@ -138,6 +145,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/my-requests"
           element={
@@ -146,6 +154,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/request-stats"
           element={
@@ -154,6 +163,16 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/senior-requests"
+          element={
+            <ProtectedRoute>
+              <SeniorRequests />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/admin/*"
           element={

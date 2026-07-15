@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 import api from "../services/api";
 
 function SeniorList() {
+  const { user } = useUser();
   const [seniors, setSeniors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -62,13 +64,8 @@ function SeniorList() {
 
   return (
     <div>
-      <button onClick={() => navigate("/my-requests")}>
-        My Requests
-      </button>
-
-      <button onClick={() => navigate("/request-stats")}>
-        Statistics
-      </button>
+      <button onClick={() => navigate("/my-requests")}>My Requests</button>
+      <button onClick={() => navigate("/request-stats")}>Statistics</button>
 
       <h1>CampusConnect</h1>
 
@@ -121,21 +118,13 @@ function SeniorList() {
         <br />
         <br />
 
-        <button type="submit">
-          Check Seniors
-        </button>
-
-        <button type="button" onClick={handleClear}>
-          Clear
-        </button>
+        <button type="submit">Check Seniors</button>
+        <button type="button" onClick={handleClear}>Clear</button>
       </form>
 
       {loading && <p>Loading seniors...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {!loading && !error && seniors.length === 0 && (
-        <p>No seniors found.</p>
-      )}
+      {!loading && !error && seniors.length === 0 && <p>No seniors found.</p>}
 
       {seniors.map((senior) => (
         <div
@@ -158,27 +147,29 @@ function SeniorList() {
           </p>
 
           <p>
-            <strong>Experience:</strong>{" "}
-            {senior.experience} Years
+            <strong>Experience:</strong> {senior.experience} Years
           </p>
 
           <p>
-            <strong>Availability:</strong>{" "}
-            {senior.availability}
+            <strong>Availability:</strong> {senior.availability}
           </p>
 
           <p>
-            <strong>Verified:</strong>{" "}
-            {senior.verified ? "Yes" : "No"}
+            <strong>Verified:</strong> {senior.verified ? "Yes" : "No"}
           </p>
 
-          <button
-            onClick={() =>
-              navigate(`/seniors/${senior._id}`)
-            }
-          >
+          <button onClick={() => navigate(`/seniors/${senior._id}`)}>
             View Profile
           </button>
+
+          {user?.role === "junior" && (
+            <button
+              onClick={() => navigate(`/request/${senior._id}`)}
+              style={{ marginLeft: "10px" }}
+            >
+              Request Connect
+            </button>
+          )}
         </div>
       ))}
 

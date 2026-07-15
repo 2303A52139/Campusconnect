@@ -52,7 +52,9 @@ function NotificationsPage() {
     <div className="page-container">
       <h1>Notifications</h1>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <div style={{ color: "red", marginBottom: "16px" }}>{error}</div>
+      )}
 
       <h2>Your Notifications</h2>
       {notifications.length === 0 ? (
@@ -65,13 +67,20 @@ function NotificationsPage() {
             style={{
               padding: "15px",
               marginBottom: "10px",
-              backgroundColor: notification.isRead ? "#f9f9f9" : "#fffacd",
-              borderLeft: notification.isRead ? "4px solid #ccc" : "4px solid #ffc107"
+              backgroundColor: notification.isRead ? "#f3f4f6" : "#fef9c3",
+              borderLeft: notification.isRead ? "4px solid #64748b" : "4px solid #f59e0b",
+              color: "#0f172a",
             }}
           >
-            <p><strong>{notification.title}</strong></p>
-            {notification.message && <p>{notification.message}</p>}
-            <p>
+            <p style={{ margin: 0, color: "#0f172a", fontWeight: 700 }}>
+              {notification.title}
+            </p>
+            {notification.message && (
+              <p style={{ color: "#0f172a", margin: "8px 0 0" }}>
+                {notification.message}
+              </p>
+            )}
+            <p style={{ color: "#475569", marginTop: "10px" }}>
               <small>
                 Type: {notification.type} | {notification.isRead ? "Read" : "Unread"}
               </small>
@@ -80,6 +89,14 @@ function NotificationsPage() {
               <button
                 onClick={() => handleMarkAsRead(notification._id)}
                 disabled={markingId === notification._id}
+                style={{
+                  borderRadius: "10px",
+                  padding: "10px 14px",
+                  backgroundColor: "#2563eb",
+                  color: "#fff",
+                  border: "none",
+                  cursor: "pointer",
+                }}
               >
                 {markingId === notification._id ? "Marking..." : "Mark as Read"}
               </button>
